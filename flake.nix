@@ -45,6 +45,7 @@
         NixDesktop = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; };
           modules = [
+            { nixpkgs.hostPlatform = "x86_64-linux"; }
             ./System/Configuration.nix
           ];
         };

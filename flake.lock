@@ -38,8 +38,8 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1774724388,
-        "narHash": "sha256-RWF5KfO0WtDgb0MPnYI1ZmWzf2lyy9lX3GzgkIbyHIA=",
+        "lastModified": 1774726481,
+        "narHash": "sha256-F8hvz+hK8BEQqABzmp2f+D3sGrIM+OhkqDoUyIdZzV4=",
         "path": "/home/denis/Evie",
         "type": "path"
       },
@@ -447,8 +447,8 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1774724508,
-        "narHash": "sha256-Xrn4h4lp3KspCMF8A/c1W7K4gcgAEAeMocfas2Hdi4s=",
+        "lastModified": 1774724808,
+        "narHash": "sha256-LadVHldmCtvZ3wkwkWHmjmeyADpt8q3id3sfXeYp9Ak=",
         "path": "/home/denis/.nix/Home/Modules/Satoshi",
         "type": "path"
       },
