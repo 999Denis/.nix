@@ -10,38 +10,28 @@
     };
 
     evie.url = "path:/home/denis/Evie";
-
     evie-greeter.url = "github:loyaall/evie-greeter";
-
     eviefetch.url = "github:loyaall/eviefetch";
-
     zen-browser.url = "github:loyaall/zen-browser-nixos-flake";
-
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
-
     nvf.url = "github:notashelf/nvf";
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      home-manager,
-      evie,
-      evie-greeter,
-      eviefetch,
-      zen-browser,
-      nix-flatpak,
-      nvf,
-      ...
-    }@inputs:
+    { self, nixpkgs, ... }@inputs:
     {
       nixosConfigurations = {
         NixDesktop = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; };
+
           modules = [
             { nixpkgs.hostPlatform = "x86_64-linux"; }
+
             ./System/Configuration.nix
+
+            {
+              nixpkgs.config.allowUnfree = true;
+            }
           ];
         };
       };
