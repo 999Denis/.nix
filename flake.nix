@@ -19,8 +19,6 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
-    satoshi.url = "path:/home/denis/.nix/Home/Modules/Satoshi";
-
     nvf.url = "github:notashelf/nvf";
   };
 
@@ -37,9 +35,6 @@
       nvf,
       ...
     }@inputs:
-    let
-      system = "x86_64-linux";
-    in
     {
       nixosConfigurations = {
         NixDesktop = nixpkgs.lib.nixosSystem {

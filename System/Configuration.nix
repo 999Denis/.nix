@@ -18,6 +18,7 @@
     ./Modules/Flatpak.nix
     ./Modules/Fonts.nix
     ./Modules/Locale.nix
+    ./Modules/Satoshi
     ./Modules/Mouse-Tweaks.nix
     ./Modules/Nvidia.nix
     ./Modules/Polkit.nix

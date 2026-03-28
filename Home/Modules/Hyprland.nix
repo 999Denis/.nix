@@ -108,7 +108,7 @@
         "$mod, F, fullscreen,"
         "$mod, Space, togglefloating,"
         "$mod, R, exec, $menu"
-        "$mod, P, exec, $menuAlt"
+        "$mod, O, exec, $menuAlt"
         "$mod, J, layoutmsg, togglesplit"
         ", PRINT, exec, hyprshot -m region --freeze -o /tmp -f screenshot.png && swappy -f /tmp/screenshot.png"
 
