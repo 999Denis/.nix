@@ -38,8 +38,8 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1774730369,
-        "narHash": "sha256-MXhhPAeOazK2svUP3xkKjWvXG9vFqFxDFKwHTIU4fAs=",
+        "lastModified": 1774735164,
+        "narHash": "sha256-KWdKlOzbgWe1PJvyU4dNeH6oInQUq9/NrIEdVsr6+vQ=",
         "path": "/home/denis/Evie",
         "type": "path"
       },
