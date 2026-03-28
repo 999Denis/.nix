@@ -53,11 +53,11 @@
 
     shellAliases = {
       Rebuild = "sudo nixos-rebuild switch --flake ~/.nix#NixDesktop";
-      Config = "nvim ~/.nix/system/config.nix";
-      Home = "nvim ~/.nix/system/home.nix";
-      Packages = "nvim ~/.nix/modules/home/packages.nix";
+      Config = "nvim ~/.nix/System/Configuration.nix";
+      Home = "nvim ~/.nix/Home/Home.nix";
+      Packages = "nvim ~/.nix/Home/Modules/Packages.nix";
       Flake = "nvim ~/.nix/flake.nix";
-      Update = "cd ~/.nix && sudo nix flake update";
+      Update = "cd ~/.nix && sudo nix flake update && sudo nixos-rebuild switch --flake ~/.nix#NixDesktop";
       Clean = "sudo nix-collect-garbage -d";
       ls = "lsd";
     };
