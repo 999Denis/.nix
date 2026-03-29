@@ -9,12 +9,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    evie.url = "path:/home/denis/Evie";
-    evie-greeter.url = "github:loyaall/evie-greeter";
-    eviefetch.url = "github:loyaall/eviefetch";
-    zen-browser.url = "github:loyaall/zen-browser-nixos-flake";
+    evie.url = "github:EvieOrg/Evie";
+    evie-greeter.url = "github:EvieOrg/EvieGreeter";
+    eviefetch.url = "github:EvieOrg/EvieFetch";
+    zen-browser.url = "github:loyall/zen-browser-nixos-flake";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
-    nvf.url = "github:notashelf/nvf";
   };
 
   outputs =
