@@ -21,6 +21,7 @@
     git
     gh
     pix
+    localsend
     slurp
     gnome-disk-utility
     gnome-text-editor
@@ -36,7 +37,6 @@
     xdg-desktop-portal-wlr
     satty
     btop
-    neovim
     wofi
 
     # Social

@@ -11,7 +11,6 @@
     inputs.zen-browser.homeManagerModules.default
     inputs.evie.homeManagerModules.evie
     inputs.eviefetch.homeManagerModules.eviefetch
-    inputs.nvf.homeManagerModules.default
 
     ./Modules/Packages.nix
     ./Modules/Services.nix

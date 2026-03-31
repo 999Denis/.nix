@@ -12,7 +12,7 @@
     evie.url = "github:EvieOrg/Evie";
     evie-greeter.url = "github:EvieOrg/EvieGreeter";
     eviefetch.url = "github:EvieOrg/EvieFetch";
-    zen-browser.url = "github:loyall/zen-browser-nixos-flake";
+    zen-browser.url = "github:loyaall/zen-browser-nixos-flake";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
 

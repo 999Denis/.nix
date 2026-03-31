@@ -1,168 +1,189 @@
-{ inputs, config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
-  programs.nvf = {
+  programs.neovim = {
     enable = true;
-    settings = {
-      vim = {
-        # Dashboard
-        dashboard.alpha.enable = true;
+    viAlias = true;
+    vimAlias = true;
+    defaultEditor = true;
 
-        # Autocomplete
-        autocomplete.nvim-cmp.enable = true;
+    extraPackages = with pkgs; [
+      rust-analyzer
+      nixd
+      bash-language-server
+      yaml-language-server
+      rustfmt
+      nixfmt
+      gcc
+      ripgrep
+      lldb
+    ];
 
-        # Syntax highlighting
-        treesitter = {
-          enable = true;
-          indent.enable = true;
-          context.enable = true;
-        };
+    plugins = with pkgs.vimPlugins; [
+      alpha-nvim
+      nvim-web-devicons
+      nvim-lspconfig
+      nvim-cmp
+      cmp-nvim-lsp
+      cmp-buffer
+      cmp-path
+      luasnip
+      cmp_luasnip
+      (nvim-treesitter.withPlugins (
+        p: with p; [
+          rust
+          nix
+          bash
+          yaml
+          toml
+          json
+          lua
+        ]
+      ))
+      nvim-treesitter-context
+      telescope-nvim
+      plenary-nvim
+      neo-tree-nvim
+      nui-nvim
+      vim-fugitive
+      lualine-nvim
+      crates-nvim
+      cord-nvim
+      which-key-nvim # Il popup per le shortcut
+      trouble-nvim
+      nvim-surround
+      nvim-notify # Le notifiche belle
+      nvim-dap
+      nvim-dap-ui
+    ];
 
-        # Telescope (fuzzy finder)
-        telescope.enable = true;
+    initLua = ''
+      -- Leader
+      vim.g.mapleader = " "
 
-        # File tree
-        filetree.neo-tree.enable = true;
+      -- --- OPZIONI CORE ---
+      vim.opt.tabstop = 2
+      vim.opt.shiftwidth = 2
+      vim.opt.softtabstop = 2
+      vim.opt.expandtab = true
+      vim.opt.smartindent = true
+      vim.opt.number = true
+      vim.opt.termguicolors = true
+      vim.opt.wrap = true
+      vim.opt.linebreak = true
 
-        # Git
-        git = {
-          enable = true;
-          gitsigns.enable = true;
-        };
+      -- --- NOTIFICHE BELLE (nvim-notify) ---
+      local notify = require("notify")
+      vim.notify = notify
+      notify.setup({
+        background_colour = "#000000",
+        stages = "fade",
+        timeout = 3000,
+      })
 
-        # Statusline
-        statusline.lualine.enable = true;
+      -- Trasparenza
+      local hl_groups = { "Normal", "NormalFloat", "NormalNC", "SignColumn", "EndOfBuffer", "NeoTreeNormal", "NeoTreeNormalNC" }
+      for _, group in ipairs(hl_groups) do
+        vim.api.nvim_set_hl(0, group, { bg = "none" })
+      end
 
-        # Aliases
-        viAlias = true;
-        vimAlias = true;
+      -- Helper Keymaps
+      local map = function(mode, lhs, rhs, desc)
+        vim.keymap.set(mode, lhs, rhs, { silent = true, desc = desc })
+      end
 
-        # Lsp
-        lsp = {
-          enable = true;
-        };
+      -- --- KEYBINDS EVIEVIM ---
+      map("n", "<C-a>", "ggVG", "Select all")
+      map("v", "<C-c>", '"+y', "Copy")
+      map("v", "<C-x>", '"+x', "Cut")
+      map("n", "<C-v>", '"+p', "Paste")
+      map("i", "<C-v>", '<C-r>+', "Paste")
+      map("n", "<C-z>", "u", "Undo")
+      map("n", "<C-y>", "<C-r>", "Redo")
+      map("n", "<C-t>", ":Neotree toggle<CR>", "Toggle tree")
+      map("n", "<C-q>", ":Alpha<CR>", "Dashboard")
+      map("n", "<leader>f", function() vim.lsp.buf.format() end, "Format file")
+      map("n", "<Down>", "gj", "Move down")
+      map("n", "<Up>", "gk", "Move up")
 
-        # Languages
-        languages = {
-          rust = {
-            enable = true;
-            extensions.crates-nvim.enable = true;
-          };
-          nix.enable = true;
-          bash.enable = true;
-          yaml.enable = true;
-        };
+      -- --- WHICH-KEY (Il Popup Carino) ---
+      local wk = require("which-key")
+      wk.setup({ delay = 0 })
 
-        # Extra configs
-        luaConfigRC.transparent = ''
-          vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-          vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-          vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
-          vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
-          vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "none" })
-          vim.api.nvim_set_hl(0, "NeoTreeNormal", { bg = "none" })
-          vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { bg = "none" })
-        '';
+      -- Ctrl+K ora apre il popup di Which-Key per farti vedere tutto!
+      map("n", "<C-k>", "<cmd>WhichKey<cr>", "Show Keybinds Popup")
 
-        # Wrapping
-        luaConfigRC.wrapping = ''
-          vim.opt.wrap = true
-          vim.opt.linebreak = true
-          vim.opt.breakindent = true
-        '';
+      -- LSP Keybinds
+      map("n", "gd", vim.lsp.buf.definition, "Go to Definition")
+      map("n", "gr", vim.lsp.buf.references, "Go to References")
+      map("n", "K", vim.lsp.buf.hover, "Hover Doc")
+      map("n", "[d", vim.diagnostic.goto_prev, "Prev Diagnostic")
+      map("n", "]d", vim.diagnostic.goto_next, "Next Diagnostic")
 
-        # Indentation
-        luaConfigRC.paste = ''
-          vim.opt.smartindent = true
-          vim.opt.autoindent = true
-          vim.opt.preserveindent = true
-        '';
+      -- --- UNIVERSAL FORMAT ON SAVE ---
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*.nix", "*.rs" },
+        callback = function() vim.lsp.buf.format({ async = false }) end,
+      })
 
-        # Tab = 2 spaces
-        luaConfigRC.indentation = ''
-          vim.opt.tabstop = 2
-          vim.opt.shiftwidth = 2
-          vim.opt.expandtab = true
-        '';
+      -- --- DASHBOARD (ALPHA) ---
+      local alpha = require('alpha')
+      local dashboard = require('alpha.themes.dashboard')
+      dashboard.section.header.val = {
+        "                                                   ",
+        " \u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2557}\u{2588}\u{2588}\u{2557}   \u{2588}\u{2588}\u{2557}\u{2588}\u{2588}\u{2557}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2557}\u{2588}\u{2588}\u{2557}   \u{2588}\u{2588}\u{2557}\u{2588}\u{2588}\u{2557}\u{2588}\u{2588}\u{2588}\u{2557}   \u{2588}\u{2588}\u{2588}\u{2557}",
+        " \u{2588}\u{2588}\u{2554}\u{2550}\u{2550}\u{2550}\u{2550}\u{255D}\u{2588}\u{2588}\u{2551}   \u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2554}\u{2550}\u{2550}\u{2550}\u{2550}\u{255D}\u{2588}\u{2588}\u{2551}   \u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2588}\u{2588}\u{2557} \u{2588}\u{2588}\u{2588}\u{2588}\u{2551}",
+        " \u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2557}  \u{2588}\u{2588}\u{2551}   \u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2557}  \u{2588}\u{2588}\u{2551}   \u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2554}\u{2588}\u{2588}\u{2588}\u{2588}\u{2554}\u{2588}\u{2588}\u{2551}",
+        " \u{2588}\u{2588}\u{2554}\u{2550}\u{2550}\u{255D}  \u{255A}\u{2588}\u{2588}\u{2557} \u{2588}\u{2588}\u{2554}\u{255D}\u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2554}\u{2550}\u{2550}\u{255D}  \u{255A}\u{2588}\u{2588}\u{2557} \u{2588}\u{2588}\u{2554}\u{255D}\u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2551}\u{255A}\u{2588}\u{2588}\u{2554}\u{255D}\u{2588}\u{2588}\u{2551}",
+        " \u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2557} \u{255A}\u{2588}\u{2588}\u{2588}\u{2588}\u{2554}\u{255D} \u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2557} \u{255A}\u{2588}\u{2588}\u{2588}\u{2588}\u{2554}\u{255D} \u{2588}\u{2588}\u{2551}\u{2588}\u{2588}\u{2551} \u{255A}\u{2550}\u{255D} \u{2588}\u{2588}\u{2551}",
+        " \u{255A}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{255D}  \u{255A}\u{2550}\u{2550}\u{2550}\u{255D}  \u{255A}\u{2550}\u{255D}\u{255A}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{255D}  \u{255A}\u{2550}\u{2550}\u{2550}\u{255D}  \u{255A}\u{2550}\u{255D}\u{255A}\u{2550}\u{255D}     \u{255A}\u{2550}\u{255D}",
+        "                                                   ",
+      }
+      dashboard.section.buttons.val = {
+        dashboard.button("e", "\u{f15b}  New file",     ":enew<CR>"),
+        dashboard.button("f", "\u{f002}  Find file",    ":Telescope find_files<CR>"),
+        dashboard.button("r", "\u{f7d9}  Recent files", ":Telescope oldfiles<CR>"),
+        dashboard.button("g", "\u{f422}  Find word",    ":Telescope live_grep<CR>"),
+        dashboard.button("q", "\u{f011}  Quit",         ":qa<CR>"),
+      }
+      alpha.setup(dashboard.config)
 
-        # Format on save
-        luaConfigRC.fmt = ''
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            pattern = { "*.nix", "*.rs" },
-            callback = function()
-              vim.lsp.buf.format({ async = false })
-            end,
-          })
-        '';
+      -- --- LSP SETUP (Nuovo Standard) ---
+      local caps = require('cmp_nvim_lsp').default_capabilities()
+      vim.lsp.config('nixd', {
+        capabilities = caps,
+        settings = { nixd = { formatting = { command = { "nixfmt" } } } }
+      })
+      vim.lsp.config('rust_analyzer', { capabilities = caps })
+      vim.lsp.config('bashls', { capabilities = caps })
+      vim.lsp.config('yamlls', { capabilities = caps })
+      vim.lsp.enable({ 'nixd', 'rust_analyzer', 'bashls', 'yamlls' })
 
-        # Space as leader
-        globals = {
-          mapleader = " ";
-        };
+      -- --- COMPLETION ---
+      local cmp = require('cmp')
+      cmp.setup({
+        snippet = { expand = function(args) require('luasnip').lsp_expand(args.body) end },
+        mapping = cmp.mapping.preset.insert({
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+          ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then cmp.select_next_item() else fallback() end
+          end, { "i", "s" }),
+        }),
+        sources = cmp.config.sources({{ name = 'nvim_lsp' }, { name = 'luasnip' }}, {{ name = 'buffer' }})
+      })
 
-        # Shortcut menu
-        luaConfigRC.menu = ''
-          vim.keymap.set("n", "<leader>-", function()
-            print('<space>e - file tree | <space>f - format | "+y - copy | "+x - cut | "+p - paste')
-          end, { desc = "Show keybinds" })
-        '';
+      -- --- ALTRI PLUGIN ---
+      require('lualine').setup()
+      require('neo-tree').setup({ filesystem = { follow_current_file = { enabled = true } } })
+      require('telescope').setup()
+      require('cord').setup({})
 
-        # Keybinds
-        keymaps = [
-          {
-            key = "<leader>e";
-            mode = "n";
-            action = ":Neotree toggle<CR>";
-            silent = true;
-            desc = "Toggle file tree";
-          }
-          {
-            key = "<Down>";
-            mode = "n";
-            action = "gj";
-            silent = true;
-            desc = "Move down visual line";
-          }
-          {
-            key = "<Up>";
-            mode = "n";
-            action = "gk";
-            silent = true;
-            desc = "Move up visual line";
-          }
-          {
-            key = "<leader>f";
-            mode = "n";
-            action = "<cmd>lua vim.lsp.buf.format()<CR>";
-            silent = true;
-            desc = "Format file";
-          }
-        ];
-
-        # Discord RPC
-        extraPlugins = {
-          cord-nvim = {
-            package = pkgs.vimPlugins.cord-nvim;
-            setup = ''
-              require('cord').setup({
-                editor = {
-                  client = 'neovim',
-                  tooltip = 'I use Neovim btw',
-                },
-                display = {
-                  show_time = true,
-                  show_repository = true,
-                  show_cursor_position = true,
-                },
-                idle = {
-                  enable = true,
-                  timeout = 1800000,
-                },
-              })
-            '';
-          };
-        };
-      };
-    };
+      -- Treesitter
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "rust", "nix", "bash", "lua" },
+        callback = function() vim.treesitter.start() end,
+      })
+    '';
   };
 }
