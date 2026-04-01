@@ -86,6 +86,7 @@
     };
   };
 
+  nix.settings.trusted-users = [ "denis" ];
   programs.zsh.enable = true;
   programs.dconf.enable = true;
   networking.hostName = "NixDesktop";

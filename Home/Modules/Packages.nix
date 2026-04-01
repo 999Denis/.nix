@@ -60,7 +60,6 @@
 
     # Themes
     adw-gtk3
-    material-symbols
 
     # Filesystems
     gvfs
